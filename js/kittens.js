@@ -21,6 +21,8 @@ var MOVE_RIGHT = 'right';
 var MOVE_UP = 'up';
 var MOVE_DOWN = 'down';
 
+var REPLAY = 0;
+
 // Preload game images
 var images = {};
 ['enemy.png', 'stars.png', 'player.png'].forEach(imgName => {
@@ -145,6 +147,8 @@ class Engine {
         this.score = 0;
         this.lastFrame = Date.now(); 
 
+      if (REPLAY == 0) {
+
         // Listen for keyboard left/right and update the player
         document.addEventListener('keydown', e => {
             if (e.keyCode === LEFT_ARROW_CODE) {
@@ -160,6 +164,8 @@ class Engine {
                 this.player.move(MOVE_UP);
             }
         });
+
+     }
 
         this.gameLoop();
     }
@@ -204,6 +210,28 @@ class Engine {
             this.ctx.font = 'bold 30px Impact';
             this.ctx.fillStyle = '#ffffff';
             this.ctx.fillText(this.score + ' GAME OVER', 5, 30);
+            this.ctx.fillText('PRESS ENTER TO RETRY', 50, 250);
+
+             this.enemies.forEach((enemy, enemyIdx) => {
+                delete this.enemies[enemyIdx];
+             });
+             
+
+            var self = this;
+
+            var checkenter = function(e) {
+                if (e.key === "Enter") {
+                console.log('done')
+                REPLAY = 1;
+                window.removeEventListener("keypress", checkenter);
+
+                var startAgain = self.start(); 
+                return;
+               }
+               
+            };
+
+            window.addEventListener("keypress", checkenter);
         }
         else {
             // If player is not dead, then draw the score
